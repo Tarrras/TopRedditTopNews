@@ -3,7 +3,7 @@ package com.testapp.topredditnews.data.response
 
 import com.google.gson.annotations.SerializedName
 
-data class DataX(
+data class Post(
     @SerializedName("author")
     val author: String,
     @SerializedName("created_utc")
