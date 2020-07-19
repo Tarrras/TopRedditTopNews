@@ -7,7 +7,7 @@ data class Post(
     @SerializedName("author")
     val author: String,
     @SerializedName("created_utc")
-    val createdUtc: Double,
+    val createdUtc: Long,
     @SerializedName("num_comments")
     val numComments: Int,
     @SerializedName("thumbnail")

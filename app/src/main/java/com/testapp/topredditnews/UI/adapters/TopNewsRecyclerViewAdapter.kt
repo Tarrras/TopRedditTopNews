@@ -47,16 +47,14 @@ class TopNewsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     fun bindItem(item: Post) {
         Picasso.get().load(item.thumbnail).into(memeImg)
         postedTimeAndAuthor.text =
-            "Posted by u/${item.author} ${countTime(item.createdUtc.toString())} hours ago"
+            "Posted by u/${item.author} ${countTime(item.createdUtc)} hours ago"
         commentsCount.text = "${item.numComments}k Comments"
     }
 
-    private fun countTime(unixTime: String): Long {
-//        val timeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-//        val currentTime = Calendar.getInstance().time
-//        val pastTime = Date(unixTime.toLong() * 1000)
-//        val timeDiff = currentTime.time - pastTime.time
-//        return timeDiff / 3600
-        return 3600 / 3600
+    private fun countTime(unixTime: Long): Long {
+        val currentTime = Calendar.getInstance().time
+        val pastTime = Date(unixTime * 1000)
+        val timeDiff = currentTime.time - pastTime.time
+        return timeDiff / 3600000
     }
 }
