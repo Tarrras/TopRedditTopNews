@@ -3,11 +3,13 @@ package com.testapp.topredditnews.UI.top_news_screen
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.testapp.topredditnews.R
 import com.testapp.topredditnews.UI.adapters.TopNewsRecyclerViewAdapter
+import com.testapp.topredditnews.UI.image_screen.ImageFragment
 import com.testapp.topredditnews.data.network.RedditApiService
 import com.testapp.topredditnews.data.repositories.TopRedditNewsRepositoryImpl
 import com.testapp.topredditnews.data.response.Post
@@ -51,7 +53,12 @@ class MainActivity : AppCompatActivity(), MainScreenView {
 
     private fun init() {
         topNewsRecyclerView = main_recycler
-        newsAdapter = TopNewsRecyclerViewAdapter()
+        newsAdapter = TopNewsRecyclerViewAdapter{ urlImage: String ->
+            val imageFragment = ImageFragment.newInstance(urlImage)
+            supportFragmentManager.beginTransaction()
+                .add(R.id.main_fragment, imageFragment).addToBackStack(null).commit()
+            Toast.makeText(this,urlImage, Toast.LENGTH_SHORT).show()
+        }
         topNewsRecyclerView.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = newsAdapter

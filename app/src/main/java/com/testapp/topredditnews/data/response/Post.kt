@@ -4,6 +4,8 @@ package com.testapp.topredditnews.data.response
 import com.google.gson.annotations.SerializedName
 
 data class Post(
+    @SerializedName("name")
+    val postId: String,
     @SerializedName("author")
     val author: String,
     @SerializedName("created_utc")
