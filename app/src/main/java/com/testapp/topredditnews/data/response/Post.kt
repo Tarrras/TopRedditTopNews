@@ -5,17 +5,17 @@ import com.google.gson.annotations.SerializedName
 
 data class Post(
     @SerializedName("name")
-    val postId: String,
+    val postId: String = "",
     @SerializedName("author")
-    val author: String,
+    val author: String = "",
     @SerializedName("created_utc")
-    val createdUtc: Long,
+    val createdUtc: Long = 0L,
     @SerializedName("num_comments")
-    val numComments: Int,
+    val numComments: Int = 0,
     @SerializedName("thumbnail")
-    val thumbnail: String,
+    val thumbnail: String = "",
     @SerializedName("ups")
-    val ups: Int,
+    val ups: Int = 0,
     @SerializedName("url_overridden_by_dest")
-    val urlOverriddenByDest: String
+    val urlOverriddenByDest: String = ""
 )

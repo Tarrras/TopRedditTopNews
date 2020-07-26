@@ -7,7 +7,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.testapp.topredditnews.R
+import com.testapp.topredditnews.UI.adapters.PaginationScrollListener
+import com.testapp.topredditnews.UI.adapters.PaginationScrollListener.Companion.PAGE_START
 import com.testapp.topredditnews.UI.adapters.TopNewsRecyclerViewAdapter
 import com.testapp.topredditnews.UI.image_screen.ImageFragment
 import com.testapp.topredditnews.data.network.RedditApiService
@@ -17,6 +20,7 @@ import kotlinx.android.synthetic.main.main_screen.*
 
 const val KEY_RECYCLER_STATE = "recycler_state"
 const val KEY_RECYCLER_LIST_STATE = "recycler_list_state"
+
 class MainActivity : AppCompatActivity(), MainScreenView {
 
     private lateinit var mainScreenPresenter: MainScreenPresenter
@@ -25,10 +29,15 @@ class MainActivity : AppCompatActivity(), MainScreenView {
     private var isSavedStateNotNull = false
     private lateinit var postsList: List<Post>
 
+    private var currentPage: Int = PAGE_START
+    private var isLastPage = false
+    private val totalPage = 2
+    private var isLoading = false
+    var itemCount = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen)
-        if(savedInstanceState != null) isSavedStateNotNull = true
         init()
     }
 
@@ -50,17 +59,20 @@ class MainActivity : AppCompatActivity(), MainScreenView {
     }
 
 
-
     private fun init() {
+//        swipe_refresh.setOnRefreshListener(this)
         topNewsRecyclerView = main_recycler
-        newsAdapter = TopNewsRecyclerViewAdapter{ urlImage: String ->
+        topNewsRecyclerView.setHasFixedSize(true)
+        newsAdapter = TopNewsRecyclerViewAdapter { urlImage: String ->
             val imageFragment = ImageFragment.newInstance(urlImage)
             supportFragmentManager.beginTransaction()
                 .add(R.id.main_fragment, imageFragment).addToBackStack(null).commit()
-            Toast.makeText(this,urlImage, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, urlImage, Toast.LENGTH_SHORT).show()
         }
+        val linLayoutManager =
+            LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
         topNewsRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            layoutManager = linLayoutManager
             adapter = newsAdapter
         }
 
@@ -69,6 +81,19 @@ class MainActivity : AppCompatActivity(), MainScreenView {
         mainScreenPresenter = MainScreenPresenterImpl(newsRepository)
         mainScreenPresenter.attachView(this)
         mainScreenPresenter.loadNews()
+
+        topNewsRecyclerView.addOnScrollListener(object :
+            PaginationScrollListener(linLayoutManager) {
+            override fun loadMoreItems() {
+                isLoading = true
+                currentPage++
+                mainScreenPresenter.loadNews()
+            }
+
+            override fun isLastPage(): Boolean = isLastPage
+
+            override fun isLoading(): Boolean = isLoading
+        })
     }
 
     override fun onDestroy() {
@@ -78,7 +103,15 @@ class MainActivity : AppCompatActivity(), MainScreenView {
 
     override fun showTopNews(newsList: List<Post>) {
         postsList = newsList
+        if (currentPage != PAGE_START) newsAdapter.removeLoading()
         newsAdapter.setupNewsList(newList = newsList)
+//        swipe_refresh.isRefreshing = false
+
+        if (currentPage < totalPage) {
+            newsAdapter.addLoading()
+        } else isLastPage = true
+
+        isLoading = false
     }
 
     override fun showLoading() {
@@ -88,4 +121,12 @@ class MainActivity : AppCompatActivity(), MainScreenView {
     override fun stopLoading() {
         main_recycler.visibility = View.VISIBLE
     }
+
+//    override fun onRefresh() {
+//        itemCount = 0
+//        currentPage = PAGE_START;
+//        isLastPage = false;
+//        newsAdapter.clearList()
+//        mainScreenPresenter.loadNews()
+//    }
 }
