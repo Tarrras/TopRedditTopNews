@@ -55,10 +55,8 @@ class TopNewsRecyclerViewAdapter(val clickEvent: (String) -> Unit) :
         notifyDataSetChanged()
     }
 
-    fun getItem(position: Int): Post = topNewsList[position]
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
-        var view: View? = null
         return when (viewType) {
             VIEW_TYPE_NORMAL -> TopNewsViewHolder(
                 LayoutInflater.from(parent.context).inflate(R.layout.news_list_item, parent, false), clickEvent)
@@ -67,8 +65,6 @@ class TopNewsRecyclerViewAdapter(val clickEvent: (String) -> Unit) :
             else -> TopNewsViewHolder(
                 LayoutInflater.from(parent.context).inflate(R.layout.news_list_item, parent, false), clickEvent)
         }
-
-//        return TopNewsViewHolder(it, clickEvent)
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -90,17 +86,8 @@ class TopNewsRecyclerViewAdapter(val clickEvent: (String) -> Unit) :
         private val memeImg = itemView.meme_img
         private val postedTimeAndAuthor = itemView.posted_by_and_time_tv
         private val commentsCount = itemView.comments_count_tv
-//        fun bindItem(item: Post) {
-//            Glide.with(itemView).load(item.urlOverriddenByDest).into(memeImg)
-//            postedTimeAndAuthor.text =
-//                "Posted by u/${item.author} ${countTime(item.createdUtc)} hours ago"
-//            commentsCount.text = "${item.numComments}k Comments"
-//            memeImg.setOnClickListener {
-//                clickEvent(item.urlOverriddenByDest)
-//            }
-//        }
+
         override fun onBind(position: Int) {
-            super.onBind(position)
             val item = topNewsList[position]
 
             Glide.with(itemView).load(item.urlOverriddenByDest).into(memeImg)
@@ -119,14 +106,14 @@ class TopNewsRecyclerViewAdapter(val clickEvent: (String) -> Unit) :
             return timeDiff / 3600000
         }
 
-        override fun clear() {
-        }
+
     }
 
 
     inner class ProgressHolder(itemView: View) :
         BaseViewHolder(itemView) {
-        override fun clear() {
+        override fun onBind(position: Int) {
+
         }
     }
 }
