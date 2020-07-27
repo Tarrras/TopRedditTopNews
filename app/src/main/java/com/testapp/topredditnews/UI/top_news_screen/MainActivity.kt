@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(), MainScreenView {
 
     private var currentPage: Int = PAGE_START
     private var isLastPage = false
-    private val totalPage = 2
+    private val totalPage = 10
     private var isLoading = false
     var itemCount = 0
 
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), MainScreenView {
             override fun loadMoreItems() {
                 isLoading = true
                 currentPage++
-                mainScreenPresenter.loadNews()
+                mainScreenPresenter.loadNews(after = postsList[postsList.lastIndex].postId)
             }
 
             override fun isLastPage(): Boolean = isLastPage

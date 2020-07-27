@@ -55,17 +55,20 @@ class ImageFragment : Fragment() {
         image_toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()
         }
-        image_toolbar.navigationIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        webview.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                imageUrl?.let { view?.loadUrl(it) }
-                return true
-            }
-        }
-        val webSettings: WebSettings = webview.settings
-        webSettings.builtInZoomControls = true
-        imageUrl?.let { webview.loadUrl(it) }
-//        webview.loadDataWithBaseURL(null, "<html><head></head><body><table style=\"width:100%; height:100%;\"><tr><td style=\"vertical-align:middle;\"><img src=\"" + imageUrl + "\"></td></tr></table></body></html>", "html/css", "utf-8", null);
+        image_toolbar.navigationIcon?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
+
+        webview.setInitialScale(1)
+        webview.settings.loadWithOverviewMode = true
+        webview.settings.useWideViewPort = true
+        webview.settings.builtInZoomControls = true
+        webview.settings.setSupportZoom(true)
+        webview.settings.javaScriptEnabled = true
+        val display: Display = (activity as AppCompatActivity).windowManager.defaultDisplay
+        val width = display.width
+        val data: String =
+            "<body><center><img width=\"$width\" src=\"" + imageUrl
+                .toString() + "\" /></center></body></html>"
+        webview.loadData(data, "text/html", null)
     }
 
     private fun downloadImage(url: String) {

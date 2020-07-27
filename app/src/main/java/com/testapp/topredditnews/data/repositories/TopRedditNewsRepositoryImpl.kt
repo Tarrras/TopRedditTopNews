@@ -9,8 +9,8 @@ import kotlinx.coroutines.withTimeout
 
 class TopRedditNewsRepositoryImpl(val apiService: RedditApiService): TopRedditNewsRepository {
 
-    override suspend fun loadNews() = withContext(Default) {
-        apiService.getTopPosts()
+    override suspend fun loadNews(count: Int, after: String): Response = withContext(Default) {
+        apiService.getTopPosts(count, after)
     }
 
 }

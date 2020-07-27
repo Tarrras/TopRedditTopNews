@@ -19,11 +19,10 @@ class MainScreenPresenterImpl(private val repository: TopRedditNewsRepository) :
         mainScreenView = null
     }
 
-    override fun loadNews() {
-        mainScreenView?.showLoading()
+    override fun loadNews(count: Int, after: String) {
         val postList = ArrayList<Post>()
         CoroutineScope(Main).launch {
-            val response = repository.loadNews().data.children
+            val response = repository.loadNews(count, after).data.children
             response.forEach { item ->
                 postList.add(item.data)
             }

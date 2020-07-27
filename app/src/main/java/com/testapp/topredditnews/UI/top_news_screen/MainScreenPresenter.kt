@@ -5,5 +5,5 @@ import com.testapp.topredditnews.data.response.Post
 interface MainScreenPresenter {
     fun attachView(mainView: MainScreenView)
     fun detachView()
-    fun loadNews()
+    fun loadNews(count: Int = 25, after: String = "")
 }
