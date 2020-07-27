@@ -19,22 +19,20 @@ import com.testapp.topredditnews.data.response.Post
 import kotlinx.android.synthetic.main.main_screen.*
 
 const val KEY_RECYCLER_STATE = "recycler_state"
-const val KEY_RECYCLER_LIST_STATE = "recycler_list_state"
 
-class MainActivity : AppCompatActivity(), MainScreenView {
+class MainActivity : AppCompatActivity(), MainScreenView, SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var mainScreenPresenter: MainScreenPresenter
     private lateinit var topNewsRecyclerView: RecyclerView
     private lateinit var newsAdapter: TopNewsRecyclerViewAdapter
-    private var isSavedStateNotNull = false
     private lateinit var postsList: List<Post>
+
 
     private var currentPage: Int = PAGE_START
     private var isLastPage = false
     private val totalPage = 10
     private var isLoading = false
     var itemCount = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_screen)
@@ -44,7 +42,6 @@ class MainActivity : AppCompatActivity(), MainScreenView {
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         val listState = topNewsRecyclerView.layoutManager?.onSaveInstanceState()
         outState.putParcelable(KEY_RECYCLER_STATE, listState)
-//        outState.putParcelableArrayList(KEY_RECYCLER_LIST_STATE, postsList)
         super.onSaveInstanceState(outState, outPersistentState)
     }
 
@@ -60,7 +57,7 @@ class MainActivity : AppCompatActivity(), MainScreenView {
 
 
     private fun init() {
-//        swipe_refresh.setOnRefreshListener(this)
+        swipe_refresh.setOnRefreshListener(this)
         topNewsRecyclerView = main_recycler
         topNewsRecyclerView.setHasFixedSize(true)
         newsAdapter = TopNewsRecyclerViewAdapter { urlImage: String ->
@@ -105,7 +102,7 @@ class MainActivity : AppCompatActivity(), MainScreenView {
         postsList = newsList
         if (currentPage != PAGE_START) newsAdapter.removeLoading()
         newsAdapter.setupNewsList(newList = newsList)
-//        swipe_refresh.isRefreshing = false
+        swipe_refresh.isRefreshing = false
 
         if (currentPage < totalPage) {
             newsAdapter.addLoading()
@@ -122,11 +119,11 @@ class MainActivity : AppCompatActivity(), MainScreenView {
         main_recycler.visibility = View.VISIBLE
     }
 
-//    override fun onRefresh() {
-//        itemCount = 0
-//        currentPage = PAGE_START;
-//        isLastPage = false;
-//        newsAdapter.clearList()
-//        mainScreenPresenter.loadNews()
-//    }
+    override fun onRefresh() {
+        itemCount = 0
+        currentPage = PAGE_START;
+        isLastPage = false;
+        newsAdapter.clearList()
+        mainScreenPresenter.loadNews()
+    }
 }
