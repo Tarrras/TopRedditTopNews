@@ -23,6 +23,11 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.testapp.topredditnews.R
 import kotlinx.android.synthetic.main.fragment_image.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.Default
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 
@@ -114,18 +119,21 @@ class ImageFragment : Fragment() {
 
             val downloadId = downloadManager.enqueue(request)
             val query = DownloadManager.Query().setFilterById(downloadId)
-            Thread(Runnable {
-                var downloading = true
-                while (downloading) {
-                    val cursor: Cursor = downloadManager.query(query)
-                    cursor.moveToFirst()
-                    if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
-                        downloading = false
-                    }
-                    val status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
-                    cursor.close()
-                }
-            }).start()
+            CoroutineScope(Default).launch {
+                startDownloading(query, downloadManager)
+            }
+        }
+    }
+
+    suspend fun startDownloading(query: DownloadManager.Query, downloadManager: DownloadManager) = withContext(IO){
+        var downloading = true
+        while (downloading) {
+            val cursor: Cursor = downloadManager.query(query)
+            cursor.moveToFirst()
+            if (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)) == DownloadManager.STATUS_SUCCESSFUL) {
+                downloading = false
+            }
+            cursor.close()
         }
     }
 
